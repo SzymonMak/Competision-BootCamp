@@ -1,0 +1,43 @@
+---
+title: "Data preparation"
+author: "Szymon Makulec"
+date: "2024-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Data Loading and Processing
+
+Data processing in such a way that only numeric values remain. For instance, "good history", "no delays", and "own property" are marked as 1, while their negative counterparts are marked as 0. Columns with multiple states: "education", "city", "marital_status", and "employment_type" are expanded into separate columns for each state, where 1 can be understood as "yes" and 0 as "no".
+
+```{r}
+library(dplyr)
+library(fastDummies)
+data_before_cleaning <- na.omit(read.csv2("../Competision-BootCamp/data_atlas.csv", sep=",", na.strings = ""))
+data <- data_before_cleaning[,c(-1,-16)] %>%
+  mutate(
+    income = as.numeric(str_replace(income, " złoty", "")),
+    children = as.numeric(ifelse(children == "brak", "0",
+                                 gsub(" dzieci", "", children) 
+                                 )
+                          ),
+    credit_history = ifelse(credit_history == "dobra historia", 1, 0),
+    overdue_payments = ifelse(overdue_payments == "brak opóźnień", 1, 0),
+    owns_property = ifelse(owns_property == "tak", 1, 0),
+    assets_value = as.numeric(str_replace(income, " złoty", ""))
+        )%>%
+  filter(!overdue_payments %in% c("2", "3", "4")) %>% 
+  dummy_cols(select_columns = c("education", "city", "marital_status", "employment_type"),remove_selected_columns = TRUE)
+```
+
+Saving prepared data
+```{r}
+write.csv(data, "data_after_preparation.csv", row.names = TRUE)
+```
+
+
+
+

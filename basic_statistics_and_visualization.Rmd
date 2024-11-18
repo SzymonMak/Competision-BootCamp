@@ -1,0 +1,34 @@
+---
+title: "First look at data"
+author: "Szymon Makulec"
+date: "2024-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+data <- as.data.frame(lapply( (read.csv2("../Competision-BootCamp/data_after_preparation.csv", sep=","))[-1] , as.numeric))
+data
+```
+
+Basic statistics
+```{r, warning=FALSE}
+library(tidyverse)
+library(DT)
+summary_data <- summary(data)
+summary_df <- as.data.frame(t(summary_data))
+datatable(summary_df, 
+          options = list(pageLength = 6, autoWidth = TRUE), rownames = FALSE )
+```
+The data does not contain any anomalous or unrealistic values, ensuring the integrity of the dataset. Credit_risk has its mean value at 0.02893. That means that in our data only around 3% of people are categorise as high risk so we need to focus especially on that small group.
+
+```{r}
+library(corrplot)
+correlation_matrix <- cor(data[, sapply(data, is.numeric)])
+corrplot(correlation_matrix, method = "circle", tl.pos = "n" )
+```
+At first it seems like credit risk isn't significantly correlated to any of our predictors, but we will test it.
+We see strong positive and negative correlations between some predictors, but for now it doesn't scares us because we can use random forest which is resistant to autocorrelation of predictors.

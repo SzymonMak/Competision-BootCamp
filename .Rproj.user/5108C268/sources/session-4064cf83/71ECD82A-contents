@@ -73,22 +73,25 @@ data
 ```{r}
 data <- data[rowSums(is.na(data)) < 3,]
 
-colSums(is.na(data)) # kolumny bez braków danych to same factory i 1 numeryczny income
+colSums(is.na(data)) # kolumny bez braków danych to same factory i  numeryczny income oraz assets_value
 
-range.model <- preProcess(data_without_NA, method = "range")
+range.model <- preProcess(data, method = "range")
 data <- predict(range.model, data)
+library(zoo) # nic dodać nic ująć
+data$income <- na.approx(data$income)
+data$assets_value <- na.approx(data$assets_value)
 
 library(missForest)
 
-data_imputed <- missForest(data)$ximp 
-data_imputed
+data <- missForest(data)$ximp 
+
+sum(is.na(data))
 ```
 
 
 Saving prepared data
 ```{r}
-saveRDS(data, "data_with_NA.rds")
-saveRDS(data_without_NA, "data_without_NA.rds")
+saveRDS(data, "data_after_preparation.rds")
 ```
 
 

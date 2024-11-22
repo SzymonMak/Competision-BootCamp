@@ -1,0 +1,8 @@
+"0","library(caret)"
+"0",""
+"0","featurePlot(x = data_num[,c(1:4)],"
+"0","            y = data$credit_risk,"
+"0","            plot = ""box"","
+"0","            scales = list( y = list(relation=""free""),"
+"0","                           x = list(rot=90) ),"
+"0","            layout = c(2,2))"

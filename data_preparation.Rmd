@@ -9,9 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Data Loading and Processing
 
-Data processing in such a way that only numeric values remain. For instance, "good history", "no delays", and "own property" are marked as 1, while their negative counterparts are marked as 0. Columns with multiple states: "education", "city", "marital_status", and "employment_type" are expanded into separate columns for each state, where 1 can be understood as "yes" and 0 as "no".
 
 ```{r}
 library(tidyverse)
@@ -27,6 +25,7 @@ data_before_cleaning %>% count(active_loans) %>% arrange(desc(n))
 unique(data_before_cleaning$marital_status)
 ```
 
+Przetwarzanie danych w taki sposób, aby pozostały tylko wartości numeryczne. Na przykład "dobra historia", "brak opóźnień" i "własna nieruchomość" są oznaczane jako 1, a ich negatywne odpowiedniki jako 0. Kolumny z wieloma stanami: "active_loans","children","education", "city", "marital_status", "employment_type" są rozszerzane na osobne kolumny dla każdego stanu, gdzie 1 oznacza "tak", a 0 oznacza "nie".
 
 ```{r}
 data <- data_before_cleaning[,c(-1,-16)] %>%
@@ -69,26 +68,29 @@ data <- data_before_cleaning[,c(-1,-16)] %>%
   dummy_cols(select_columns = c("active_loans","children","education", "city", "marital_status", "employment_type"),remove_selected_columns = TRUE)
 data
 ```
-
+Wybieram te wiersze gdzie jest maksymalnie 2 braki danych a następnie za pomocą chociażby lasów losowych uzupełniam braki danych w kolumnach typu factor.
 ```{r}
 data <- data[rowSums(is.na(data)) < 3,]
 
-colSums(is.na(data)) # kolumny bez braków danych to same factory i 1 numeryczny income
+colSums(is.na(data)) # kolumny bez braków danych to same factory i  numeryczny income oraz assets_value
 
-range.model <- preProcess(data_without_NA, method = "range")
+range.model <- preProcess(data, method = "range")
 data <- predict(range.model, data)
+library(zoo) # nic dodać nic ująć
+data$income <- na.approx(data$income)
+data$assets_value <- na.approx(data$assets_value)
 
 library(missForest)
 
-data_imputed <- missForest(data)$ximp 
-data_imputed
+data <- missForest(data)$ximp 
+
+sum(is.na(data))
 ```
 
 
 Saving prepared data
 ```{r}
-saveRDS(data, "data_with_NA.rds")
-saveRDS(data_without_NA, "data_without_NA.rds")
+saveRDS(data, "data_after_preparation.rds")
 ```
 
 

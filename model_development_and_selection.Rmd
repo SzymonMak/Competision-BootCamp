@@ -9,10 +9,23 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include=FALSE}
-data <- (read.csv2("../Competision-BootCamp/data_after_preparation.csv", sep=","))[-1]
-data
+```{r}
+library(tidymodels)
+set.seed(223)
 ```
 
-# Creating models
+
+```{r, include=FALSE}
+data <- readRDS("data_after_preparation.rds")
+```
+
+```{r}
+data <- data[c("age", "years_in_job", "credit_history", "overdue_payments", "owns_property", 
+  "other_loans", "active_loans_0", "active_loans_1", "active_loans_2", 
+  "children_1", "children_2", "children_3", "education_podstawowe", 
+  "education_wyższe", "city_duże", "city_małe", "marital_status_rozwiedziony_rozwiedziona","credit_risk")]
+#df [9,011 × 18]
+
+```
+
 

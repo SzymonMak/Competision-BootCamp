@@ -1,0 +1,6 @@
+"0","library(tidyverse)"
+"0","library(DT)"
+"0","summary_data <- summary(data)"
+"0","summary_df <- as.data.frame(t(summary_data))"
+"0","datatable(summary_df, "
+"0","          options = list(pageLength = 6, autoWidth = TRUE), rownames = FALSE )"

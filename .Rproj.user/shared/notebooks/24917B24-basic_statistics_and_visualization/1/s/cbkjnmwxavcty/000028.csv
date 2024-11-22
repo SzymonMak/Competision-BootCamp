@@ -1,0 +1,1 @@
+"0","#sum(data$credit_risk==1) # ile obserwacji ma credit risk "

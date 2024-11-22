@@ -1,0 +1,8 @@
+"0","set.seed(223)"
+"0","podzial <- createDataPartition("
+"0","  y=data$credit_risk,"
+"0","  times = 1,"
+"0","  p=0.8,"
+"0","  list=F"
+"0",")"
+"0",""

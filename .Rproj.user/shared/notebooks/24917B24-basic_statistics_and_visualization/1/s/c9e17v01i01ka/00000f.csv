@@ -1,0 +1,1 @@
+"0","las2 <- randomForest(credit_risk~., trening, ntree = 1000)"

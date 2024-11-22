@@ -1,0 +1,5 @@
+"0","library(corrplot)"
+"2","corrplot 0.95 loaded
+"
+"0","correlation_matrix <- cor(data[, sapply(data, is.numeric)])"
+"0","corrplot(correlation_matrix, method = ""circle"", tl.pos = ""n"" )"

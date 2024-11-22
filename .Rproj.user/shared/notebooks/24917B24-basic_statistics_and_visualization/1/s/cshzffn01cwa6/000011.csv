@@ -1,0 +1,3 @@
+"0","model <- train(credit_risk ~ .,"
+"0","               data = trening,"
+"0","               method = 'rf')"

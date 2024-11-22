@@ -1,0 +1,8 @@
+"0","minority <- trening[trening$credit_risk == ""1"", ]"
+"0","majority <- trening[trening$credit_risk == ""0"", ]"
+"0",""
+"0","minority_oversampled <- minority[sample(1:nrow(minority), "
+"0","                                        size = nrow(majority), "
+"0","                                        replace = TRUE), ]"
+"0","trening_balanced <- rbind(majority, minority_oversampled)"
+"0","trening_balanced"

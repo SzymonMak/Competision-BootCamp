@@ -66,10 +66,10 @@ data <- data_before_cleaning[,c(-1,-16)] %>%
     marital_status = gsub("/", "_", data_before_cleaning$marital_status ))%>%
   
   dummy_cols(select_columns = c("active_loans","children","education", "city", "marital_status", "employment_type"),remove_selected_columns = TRUE)
-data
 ```
 Wybieram te wiersze gdzie jest maksymalnie 2 braki danych a następnie za pomocą chociażby lasów losowych uzupełniam braki danych w kolumnach typu factor.
 ```{r}
+library(missForest)
 data <- data[rowSums(is.na(data)) < 3,]
 
 colSums(is.na(data)) # kolumny bez braków danych to same factory i  numeryczny income oraz assets_value
@@ -79,9 +79,6 @@ data <- predict(range.model, data)
 library(zoo) # nic dodać nic ująć
 data$income <- na.approx(data$income)
 data$assets_value <- na.approx(data$assets_value)
-
-library(missForest)
-
 data <- missForest(data)$ximp 
 
 sum(is.na(data))

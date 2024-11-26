@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+set.seed(223)
 ```
 
 ```{r, include=FALSE}
@@ -17,6 +18,7 @@ Basic statistics
 ```{r, warning=FALSE}
 library(tidyverse)
 library(DT)
+
 summary_data <- summary(data)
 summary_df <- as.data.frame(t(summary_data))
 datatable(summary_df, 
@@ -72,10 +74,21 @@ for ( i in 5 : ncol(data_num) ){
 
 
 Ustalenie podziału danych
+
 ```{r}
-set.seed(223)
+minority <- data[data$credit_risk == "1", ]
+majority <- data[data$credit_risk == "0", ]
+
+minority_oversampled <- minority[sample(1:nrow(minority), 
+                                        size = nrow(majority), 
+                                        replace = TRUE), ]
+df_balanced <- rbind(majority, minority_oversampled)
+
+```
+
+```{r}
 podzial <- createDataPartition(
-  y=data$credit_risk,
+  y=df_balanced$credit_risk,
   times = 1,
   p=0.8,
   list=F
@@ -83,30 +96,20 @@ podzial <- createDataPartition(
 
 ```
 
-
 ```{r}
 trening <- df_balanced[podzial,]
-test <- data[-podzial,]
+test <- df_balanced[-podzial,]
 
-trening[trening$credit_risk==1,]
-test[test$credit_risk==1,]
+head(trening[trening$credit_risk==1,])
+head(test[test$credit_risk==1,])
 ```
 
 Zarówno w zbiorze testowym jak i treningowym mamy sytuacje typu 0 oraz 1. Szczególnie w zbiorze treningowym interesuje nas żeby model nie przeuczył się w stronę 0 więc sztucznie tworzymy nowe obserwacje.
-```{r}
-minority <- trening[trening$credit_risk == "1", ]
-majority <- trening[trening$credit_risk == "0", ]
 
-minority_oversampled <- minority[sample(1:nrow(minority), 
-                                        size = nrow(majority), 
-                                        replace = TRUE), ]
-trening_balanced <- rbind(majority, minority_oversampled)
-trening_balanced
-
-```
 
 Trenujemy lasu losowe
 ```{r}
+
 library(randomForest)
 las <- randomForest(credit_risk~., trening)
 las$type
@@ -114,58 +117,44 @@ las$importance
 las$ntree
 las
 ```
+```{r}
+saveRDS(las, "model_las.rds")
+```
+
+```{r}
+las <- readRDS("model_las.rds")
+```
+
 Predykcje dla zbioru testowego
 ```{r}
+
 pr <- predict(las, test)
 confusionMatrix(pr, test$credit_risk)
 ```
 Jak na pierwszy las losowy to tragedii nie ma, ale mogłoby być lepiej.
 
 Próbujemy stworzyć las inną metodą
-```{r}
-model <- train(credit_risk ~ .,
-               data = trening,
-               method = 'rf')
-```
 
 ```{r}
-model
-prognoza <-  predict(model, test)
-confusionMatrix(prognoza, test$credit_risk)
-```
-Modele wyszły jednakowo
-
-```{r}
-las2 <- randomForest(credit_risk~., trening, ntree = 1000)
-```
-
-```{r}
-pr2 <- predict(las2, test)
-confusionMatrix(pr2, test$credit_risk)
-```
-```{r}
-las3 <- randomForest(credit_risk~., trening, ntree = 10000)
-```
-```{r}
-pr3 <- predict(las3, test)
-confusionMatrix(pr3, test$credit_risk)
-```
-Włączanie większej ilości drzew nie przyniosło lepszych efektów.
-
-```{r}
-lass <- randomForest(credit_risk~., trening, ntree = 60)
+lass <- randomForest(credit_risk~., trening, ntree = 100)
 lass
 ```
-Predykcje dla zbioru testowego
 ```{r}
-prs <- predict(lass, test)
-confusionMatrix(prs, test$credit_risk)
+saveRDS(lass, "model_lass.rds")
 ```
-Las z 60 drzewami na zbiorze testowym radzi sobie tak samo jak ten z 10000.
 
 ```{r}
-saveRDS(lass, "model_rf.rds")
+lass <- readRDS("model_lass.rds")
 ```
+
+```{r}
+
+prr <- predict(lass, test)
+confusionMatrix(prr, test$credit_risk)
+```
+
+
+
 
 
 
